@@ -1,0 +1,2 @@
+class ParameterJSONFormatError(BaseException):
+    pass
