@@ -1,3 +1,13 @@
+### Python版本说明
+
+基于python3.11.2开发。
+
+### pip安装python依赖包
+
+```shell
+pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple --trusted-host pypi.tuna.tsinghua.edu.cn
+```
+
 ### 配置pre-commit
 
 ```shell
@@ -12,12 +22,12 @@ pre-commit install --hook-type commit-msg --allow-missing-config
 
 ```shell
 # celery worker --help
-celery -A heartgo worker -c 1 -l INFO -O fair --max-tasks-per-child=50
+celery -A heartgo worker -l INFO
+[-Q your_queue] [-c 10] [-O fair] [--max-tasks-per-child=50]
 
 # win10调用celery4.x版本以上，执行task抛ValueError
-# 需指定worker并发实现方式
-pip install gevent
-celery -A ... -P gevent
+# 更改默认prefork多进程并发为协程
+celery -A ... -P gevent -c 100
 ```
 
 #### 启动celery beat
