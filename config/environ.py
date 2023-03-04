@@ -10,8 +10,14 @@ def get_env_or_raise(key):
 
 APP_CODE = os.getenv("APP_CODE", "heartgo")
 ENVIRONMENT = os.getenv("ENVIRONMENT", "dev")
-REDIS_HOSTS = os.getenv("REDIS_HOSTS", "")
-REDIS_PASSWORD = os.getenv("REDIS_PASSWORD", "")
-REDIS_DB = os.getenv("REDIS_DB", 0)
+
 SENTINEL_HOSTS = os.getenv("SENTINEL_HOSTS", "")
-SENTINEL_SERVICE_NAME = os.getenv("SENTINEL_SERVICE_NAME", "")
+SENTINEL_SERVICE_NAME = os.getenv("SENTINEL_SERVICE_NAME")
+REDIS_HOSTS = os.getenv("REDIS_HOSTS", "")
+REDIS_USERNAME = os.getenv("REDIS_USERNAME")
+REDIS_PASSWORD = os.getenv("REDIS_PASSWORD")
+REDIS_DB = os.getenv("REDIS_DB", 0)
+REDIS_MAX_CONNECTIONS = int(os.getenv("REDIS_MAX_CONNECTIONS", 2 ** 10))
+REDIS_SOCKET_TIMEOUT = int(os.getenv("REDIS_SOCKET_TIMEOUT", 3))
+REDIS_SOCKET_CONNECT_TIMEOUT = int(os.getenv("REDIS_SOCKET_CONNECT_TIMEOUT", 5))
+REDIS_RETRY_ON_TIMEOUT = os.getenv("REDIS_RETRY_ON_TIMEOUT", "true") == "true"
