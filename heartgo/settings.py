@@ -149,3 +149,8 @@ CELERY_CACHE_BACKEND = "django-cache"
 CELERY_RESULT_EXTENDED = True
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 # CELERY_BROKER_CONNECTION_MAX_RETRIES = None
+
+try:
+    from local_settings import *  # noqa
+except ImportError:
+    pass
