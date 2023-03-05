@@ -1,6 +1,6 @@
 from functools import wraps
 
-from utils.redis import get_redis_connection
+from utils.redis import get_redis_client
 
 
 def method_lock(lock_key: str = None, expire_time: int = 60, lock_wait=True):
@@ -16,7 +16,7 @@ def method_lock(lock_key: str = None, expire_time: int = 60, lock_wait=True):
     def _method_lock(view_func):
         def _wrapped_view(*args, **kwargs):
             func_uniq_key = "lock_{}_{}".format(view_func.__module__.replace(".", "_"), view_func.__name__)
-            lock = get_redis_connection().lock(lock_key or func_uniq_key, expire_time, 0.05, 30 * 60)
+            lock = get_redis_client().lock(lock_key or func_uniq_key, expire_time, 0.05, 30 * 60)
             if not lock_wait and lock.locked():
                 return
             with lock:

@@ -5,21 +5,20 @@ from redis.cluster import ClusterNode, RedisCluster
 
 from config import environ
 
-redis_connection = None
+_redis_client = None
 
 
-def get_redis_connection():
-    global redis_connection
-    if redis_connection:
-        return redis_connection
-
+def _parse_hosts():
     host_pattern = re.compile(r"([\d.\w-]+):(\d+)")
     redis_hosts = host_pattern.findall(environ.REDIS_HOSTS)
     """[('ip', 'port'), ('ip', 'port')]"""
     sentinel_hosts = host_pattern.findall(environ.SENTINEL_HOSTS)
     if not redis_hosts and not sentinel_hosts:
         raise RuntimeError("There is no valid redis or sentinel host, please check the environment variable.")
+    return redis_hosts, sentinel_hosts
 
+
+def _get_connection_kwargs():
     connection_kwargs = {
         # username available when Redis server > 6.0.0
         "username": environ.REDIS_USERNAME,
@@ -38,14 +37,25 @@ def get_redis_connection():
         # retry once if socket timeout when connecting or sending command
         "retry_on_timeout": environ.REDIS_RETRY_ON_TIMEOUT,
     }
+    return connection_kwargs
 
+
+def _make_client():
+    redis_hosts, sentinel_hosts = _parse_hosts()
+    connection_kwargs = _get_connection_kwargs()
     if sentinel_hosts:
         sentinel = Sentinel(sentinel_hosts, **connection_kwargs)
-        redis_connection = sentinel.master_for(environ.SENTINEL_SERVICE_NAME)
+        client = sentinel.master_for(environ.SENTINEL_SERVICE_NAME)
     elif len(redis_hosts) > 1:
-        connection_kwargs.pop("db")
-        redis_connection = RedisCluster(startup_nodes=[ClusterNode(*host) for host in redis_hosts], **connection_kwargs)
+        connection_kwargs.pop("db", None)
+        client = RedisCluster(startup_nodes=[ClusterNode(*host) for host in redis_hosts], **connection_kwargs)
     else:
-        redis_connection = Redis(*redis_hosts[0], **connection_kwargs)
+        client = Redis(*redis_hosts[0], **connection_kwargs)
+    return client
 
-    return redis_connection
+
+def get_redis_client():
+    global _redis_client
+    if not _redis_client:
+        _redis_client = _make_client()
+    return _redis_client
