@@ -8,4 +8,5 @@ django-celery-beat==2.4.0
 gevent==22.10.2
 redis[hiredis]==4.5.1
 redis-om==0.1.2
-channels[daphne,channels_redis]==4.0.0
+channels[daphne]==4.0.0
+channels_redis==4.0.0
