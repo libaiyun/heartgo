@@ -8,6 +8,17 @@
 pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple --trusted-host pypi.tuna.tsinghua.edu.cn
 ```
 
+windows可能遇到以下错误：
+`error: Microsoft Visual C++ 14.0 or greater is required.`
+
+请到 <https://www.lfd.uci.edu/~gohlke/pythonlibs/> 直接下载该包的whl文件，放到项目下，然后`pip install xxx.whl`
+
+例如：
+
+```shell
+pip install twisted_iocpsupport‑1.0.2‑cp311‑cp311‑win_amd64.whl
+```
+
 ### 配置pre-commit
 
 ```shell

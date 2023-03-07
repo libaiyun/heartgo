@@ -29,6 +29,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    # "daphne",  # add if you want to override the runserver command to start ASGI/Daphne.
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -39,6 +40,8 @@ INSTALLED_APPS = [
     "django_celery_results",
     "django_celery_beat",
     "usermanage",
+    # "channels",  # add if you want to use the channels worker
+    "chat",
 ]
 
 MIDDLEWARE = [
@@ -70,7 +73,29 @@ TEMPLATES = [
     },
 ]
 
+# https://docs.djangoproject.com/en/4.1/ref/settings/#wsgi-application
 WSGI_APPLICATION = "heartgo.wsgi.application"
+
+# default None, daphne will use get_asgi_application() if None.
+# daphne uses it to override the runserver command.(daphne should be added to the top of INSTALLED_APPS)
+# ASGI_APPLICATION = "heartgo.asgi.application"
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        # https://pypi.org/project/channels-redis/
+        "CONFIG": {
+            # https://redis-py.readthedocs.io/en/v4.3.3/connections.html#id3
+            "hosts": [
+                {
+                    "host": "localhost",
+                    "port": 6379,
+                    "password": "123456",
+                },
+            ],
+        },
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
