@@ -10,3 +10,4 @@ redis[hiredis]==4.5.1
 redis-om==0.1.2
 channels[daphne]==4.0.0
 channels_redis==4.0.0
+supervisor==4.2.5
