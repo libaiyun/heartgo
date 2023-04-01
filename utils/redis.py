@@ -44,7 +44,8 @@ def _make_client():
     redis_hosts, sentinel_hosts = _parse_hosts()
     connection_kwargs = _get_connection_kwargs()
     if sentinel_hosts:
-        sentinel = Sentinel(sentinel_hosts, **connection_kwargs)
+        sentinel_kwargs = {"password": environ.SENTINEL_PASSWORD}
+        sentinel = Sentinel(sentinel_hosts, sentinel_kwargs=sentinel_kwargs, **connection_kwargs)
         client = sentinel.master_for(environ.SENTINEL_SERVICE_NAME)
     elif len(redis_hosts) > 1:
         connection_kwargs.pop("db", None)
