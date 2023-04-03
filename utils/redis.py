@@ -55,6 +55,37 @@ def _make_client():
     return client
 
 
+class _MakeClient:
+    def __init__(self):
+        self.redis_hosts, self.sentinel_hosts = _parse_hosts()
+        self.connection_kwargs = _get_connection_kwargs()
+        self.redis_maker = {
+            "single": self._make_single,
+            "sentinel": self._make_sentinel,
+            "cluster": self._make_cluster,
+        }
+
+    def make(self):
+        return self.redis_maker.get(environ.REDIS_MODE, self._make_error)()
+
+    def _make_single(self):
+        return Redis(*self.redis_hosts[0], **self.connection_kwargs)
+
+    def _make_sentinel(self):
+        sentinel_kwargs = {"password": environ.SENTINEL_PASSWORD}
+        sentinel = Sentinel(self.sentinel_hosts, sentinel_kwargs=sentinel_kwargs, **self.connection_kwargs)
+        return sentinel.master_for(environ.SENTINEL_SERVICE_NAME)
+
+    def _make_cluster(self):
+        self.connection_kwargs.pop("db", None)
+        return RedisCluster(startup_nodes=[ClusterNode(*host) for host in self.redis_hosts], **self.connection_kwargs)
+
+    def _make_error(self):
+        raise RuntimeError(
+            "REDIS_MODE not supported: '{}', options: {}".format(environ.REDIS_MODE, list(self.redis_maker))
+        )
+
+
 def get_redis_client():
     global _redis_client
     if not _redis_client:
