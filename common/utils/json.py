@@ -11,8 +11,9 @@ from common.constants import DATE_FORMAT, DATETIME_FORMAT, TIME_FORMAT
 
 
 class CustomJSONEncoder(json.JSONEncoder):
+    """自定义Json编码器, 自定义日期时间转换格式"""
+
     def default(self, o):
-        # See "Date Time String Format" in the ECMA-262 specification.
         if isinstance(o, datetime.datetime):
             return o.strftime(DATETIME_FORMAT)
         elif isinstance(o, datetime.date):

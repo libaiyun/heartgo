@@ -3,6 +3,8 @@ from common.utils.django import resolve_request
 
 
 class ExceptionHandleMiddleware:
+    """统一异常处理"""
+
     def __init__(self, get_response):
         self.get_response = get_response
 

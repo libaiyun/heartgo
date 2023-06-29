@@ -5,8 +5,8 @@ from django.utils.translation import gettext_lazy as _
 
 class CustomException(Exception):
     """
-    Base class for project custom exceptions.
-    Subclasses should provide `.code` and `.message` properties.
+    自定义项目异常基类,
+    子类需要提供 CODE、MESSAGE 这两个属性
     """
 
     CODE = 10000

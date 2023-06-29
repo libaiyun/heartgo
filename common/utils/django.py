@@ -9,8 +9,8 @@ from common.exceptions import ParamFormatError
 
 def resolve_request(request):
     """
-    resolve request to get view function and params,
-    copied from django.core.handlers.base.BaseHandler.resolve_request
+    从request请求对象中解析视图处理函数和函数入参,
+    借鉴 django.core.handlers.base.BaseHandler.resolve_request
     """
     if hasattr(request, "urlconf"):
         urlconf = request.urlconf
@@ -25,6 +25,7 @@ def resolve_request(request):
 
 def _deserialize_request_params(request_params) -> dict:
     """
+    反序列化 QueryDict 类型的请求参数, 转换成字典
     参考: https://docs.djangoproject.com/zh-hans/4.0/ref/request-response/#querydict-objects
     示例:
         请求参数: QueryDict('a=1&a=2&c=3&d=[1,2]&e={"x":1}')
@@ -50,6 +51,7 @@ def _deserialize_request_params(request_params) -> dict:
 
 
 def get_params_from_request(request, raise_exception=True):
+    """从request请求对象中读取所有请求参数, 并反序列化为字典"""
     get_params = _deserialize_request_params(request.GET)
     post_params = _deserialize_request_params(request.POST)
 
