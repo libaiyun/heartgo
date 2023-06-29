@@ -52,7 +52,9 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "middleware.common.CommonMiddleware",
+    "common.middleware.common.CommonMiddleware",  # 中间件置前保证request相关变量第一时间写入线程
+    "common.middleware.unified_exception_handle.ExceptionHandleMiddleware",
+    "common.middleware.unified_response.UnifiedResponseMiddleware",
 ]
 
 ROOT_URLCONF = "heartgo.urls"
@@ -162,6 +164,7 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly"],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 10,
+    "EXCEPTION_HANDLER": "common.handlers.exception.exception_handler",
 }
 
 # Celery Configuration Options
