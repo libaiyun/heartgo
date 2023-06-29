@@ -45,9 +45,12 @@ class UnifiedResponseMiddleware:
                 logger.exception("统一Json响应格式化失败, 响应数据->%s" % response.content)
                 return response
 
+        return response
+
+    def process_template_response(self, request, response):
+        """如果response有render方法，则在render前执行本中间件"""
         if isinstance(response, Response):
             response.data = _format_response_data(response.data)
-            response.content = response.rendered_content
             response.status_code = status.HTTP_200_OK
             return response
 
