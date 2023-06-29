@@ -1,8 +1,10 @@
+import functools
 import re
 
 from redis import Redis, Sentinel
 from redis.cluster import ClusterNode, RedisCluster
 
+from common import logger
 from config import environ
 
 _redis_client = None
@@ -91,3 +93,32 @@ def get_redis_client():
     if not _redis_client:
         _redis_client = _make_client()
     return _redis_client
+
+
+def redis_lock(key=None, expire=60, lock_wait=True, sleep=0.05, blocking_timeout=30 * 60):
+    """
+    redis实现分布式锁
+    :param key: 锁key
+    :param expire: 锁过期时间
+    :param lock_wait: 是否阻塞等待锁
+    :param sleep: 锁阻塞时, 尝试循环获取锁的间隔时间
+    :param blocking_timeout: 锁阻塞等待的最大时间
+    :return:
+    """
+
+    def wrapper(func):
+        def decorated(*args, **kwargs):
+            if key is None:
+                name = "locked_{}_{}".format(func.__module__, func.__qualname__)
+            else:
+                name = key
+            lock = get_redis_client().lock(name, expire, sleep, blocking_timeout=blocking_timeout)
+            if not lock_wait and lock.locked():
+                logger.error("检查到redis锁，代码执行提前结束, 锁key->%s" % name)
+                return
+            with lock:
+                return func(*args, **kwargs)
+
+        return functools.wraps(func)(decorated)
+
+    return wrapper
